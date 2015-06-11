@@ -1,3 +1,9 @@
 <resources>
     <string name="app_name">Spotify Streamer</string>
+
+    <string name="title_activity_main">Spotify Streamer</string>
+
+    <string name="hint_search_artist">Enter the artist name</string>
+
+    <string name="action_settings">Settings</string>
 </resources>
