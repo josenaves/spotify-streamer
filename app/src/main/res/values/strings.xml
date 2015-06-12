@@ -5,5 +5,10 @@
 
     <string name="hint_search_artist">Enter the artist name</string>
 
+
+    <string name="title_activity_top_ten">Top 10 Tracks</string>
+
     <string name="action_settings">Settings</string>
+
+
 </resources>
