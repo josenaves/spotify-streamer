@@ -8,8 +8,8 @@
     <ImageView
         android:id="@+id/imgArtist"
         android:src="@drawable/abc_btn_rating_star_on_mtrl_alpha"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content" />
+        android:layout_width="96dp"
+        android:layout_height="96dp" />
 
     <TextView
         android:id="@+id/txtArtist"
@@ -17,6 +17,6 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_gravity="center_vertical"
-        />
+        android:layout_marginLeft="16dp" />
 
 </LinearLayout>
