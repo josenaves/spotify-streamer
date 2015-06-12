@@ -1,10 +1,12 @@
 package com.josenaves.spotifystreamer;
 
+import android.app.Activity;
 import android.content.Context;
 import android.content.Intent;
 import android.os.AsyncTask;
 import android.support.v4.app.Fragment;
 import android.os.Bundle;
+import android.support.v4.app.FragmentActivity;
 import android.util.Log;
 import android.view.KeyEvent;
 import android.view.LayoutInflater;
@@ -29,6 +31,7 @@ import kaaes.spotify.webapi.android.models.Artist;
 import kaaes.spotify.webapi.android.models.ArtistsPager;
 
 
+
 /**
  * A placeholder fragment containing a simple view.
  */
@@ -39,20 +42,36 @@ public class MainActivityFragment extends Fragment {
     public static final String ARTIST_ID = "artist_id";
     public static final String ARTIST_NAME = "artist_name";
 
+    private SpotifyService spotifyService = SpotifyRestService.getInstance("BR");
+
     private EditText txtSearch;
     private ListView lstResults;
 
     private ArtistAdapter adapter;
-
-
-    private SpotifyService spotifyService = SpotifyRestService.getInstance("BR");
+    private FragmentActivity listener;
 
     public MainActivityFragment() {
     }
 
     @Override
-    public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
+    public void onAttach(Activity activity) {
+        Log.d(TAG, "onAttach...");
+        super.onAttach(activity);
+        this.listener = (FragmentActivity) activity;
+    }
 
+    @Override
+    public void onCreate(Bundle savedInstanceState) {
+        Log.d(TAG, "onCreate...");
+        super.onCreate(savedInstanceState);
+
+        // create the adapter to convert the results into views
+        adapter = new ArtistAdapter(listener, new ArrayList<Artist>());
+    }
+
+    @Override
+    public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
+        Log.d(TAG, "onCreateView...");
         View view = inflater.inflate(R.layout.fragment_main, container, false);
 
         txtSearch = (EditText)view.findViewById(R.id.txtSearch);
@@ -62,28 +81,28 @@ public class MainActivityFragment extends Fragment {
                 if (keyCode == EditorInfo.IME_ACTION_SEARCH ||
                     keyCode == EditorInfo.IME_ACTION_DONE ||
                     event.getAction() == KeyEvent.ACTION_DOWN &&
+                    event.getAction() == KeyEvent.ACTION_DOWN &&
                     event.getKeyCode() == KeyEvent.KEYCODE_ENTER) {
 
-                    performSearch(txtSearch.getText().toString());
+                    String query = txtSearch.getText().toString();
+                    Log.d(TAG, "Searching " + query);
+
+                    new ArtistSearch().execute(query);
+
                     return true;
                 }
                 return false;
             }
         });
 
-        // create the adapter to convert the results into views
-        adapter = new ArtistAdapter(getActivity(), new ArrayList<Artist>());
-
-        lstResults = (ListView) view.findViewById(R.id.lstResults);
-
         // attach the adapter to the listview
+        lstResults = (ListView) view.findViewById(R.id.lstResults);
         lstResults.setAdapter(adapter);
-
         lstResults.setOnItemClickListener(new AdapterView.OnItemClickListener() {
             @Override
             public void onItemClick(AdapterView<?> adapterView, View view, int position, long id) {
                 Artist artist = (Artist)adapterView.getItemAtPosition(position);
-                Intent intent = new Intent(getActivity(), TopTenActivity.class);
+                Intent intent = new Intent(listener, TopTenActivity.class);
                 intent.putExtra(ARTIST_ID, artist.id);
                 intent.putExtra(ARTIST_NAME, artist.name);
                 startActivity(intent);
@@ -94,18 +113,16 @@ public class MainActivityFragment extends Fragment {
         return view;
     }
 
-    private void performSearch(String query) {
-        Log.d(TAG, "Buscando " + query);
-
-        Toast.makeText(getActivity(), "Buscando...", Toast.LENGTH_SHORT).show();
-
-        new ArtistSearch().execute(query);
-    }
-
     /**
      * AsyncTask for doing network stuff off the main thread
      */
     private class ArtistSearch extends AsyncTask<String, Void, List<Artist>> {
+
+        @Override
+        protected void onPreExecute() {
+            super.onPreExecute();
+            ((MainActivity)listener).showProgressBar();
+        }
 
         @Override
         protected List<Artist> doInBackground(String... params) {
@@ -115,11 +132,18 @@ public class MainActivityFragment extends Fragment {
 
         @Override
         protected void onPostExecute(List<Artist> artists) {
-            Log.d(TAG, "chegou... " + artists);
-            if (artists != null) {
-                adapter.clear();
+            Log.d(TAG, "Got results... " + artists);
+
+            adapter.clear();
+            if (artists != null && !artists.isEmpty()) {
                 adapter.addAll(artists);
             }
+            else {
+                String msg = "Nothing found for " + txtSearch.getText().toString();
+                Toast.makeText(listener, msg, Toast.LENGTH_SHORT).show();
+            }
+
+            ((MainActivity)listener).hideProgressBar();
         }
     }
 
@@ -162,6 +186,12 @@ public class MainActivityFragment extends Fragment {
 
             return convertView;
         }
+    }
+
+    @Override
+    public void onPause() {
+        Log.d(TAG, "onPause...");
+        super.onPause();
     }
 
 

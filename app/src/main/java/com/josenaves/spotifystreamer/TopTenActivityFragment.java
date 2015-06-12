@@ -1,11 +1,11 @@
 package com.josenaves.spotifystreamer;
 
+import android.app.Activity;
 import android.content.Context;
 import android.os.AsyncTask;
 import android.support.v4.app.Fragment;
 import android.os.Bundle;
-import android.support.v7.app.AppCompatActivity;
-import android.text.Layout;
+import android.support.v4.app.FragmentActivity;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -14,6 +14,7 @@ import android.widget.ArrayAdapter;
 import android.widget.ImageView;
 import android.widget.ListView;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import com.squareup.picasso.Picasso;
 
@@ -21,8 +22,6 @@ import java.util.ArrayList;
 import java.util.List;
 
 import kaaes.spotify.webapi.android.SpotifyService;
-import kaaes.spotify.webapi.android.models.Artist;
-import kaaes.spotify.webapi.android.models.ArtistsPager;
 import kaaes.spotify.webapi.android.models.Track;
 import kaaes.spotify.webapi.android.models.Tracks;
 
@@ -33,29 +32,41 @@ public class TopTenActivityFragment extends Fragment {
     private SpotifyService spotifyService = SpotifyRestService.getInstance("BR");
 
     private String artistId;
-
     private ListView listTracks;
-
     private TrackAdapter adapter;
+
+    private FragmentActivity listener;
 
     public TopTenActivityFragment() {
     }
 
     @Override
-    public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
+    public void onAttach(Activity activity) {
+        Log.d(TAG, "onAttach...");
+        super.onAttach(activity);
+        this.listener = (FragmentActivity) activity;
+    }
 
-        View view = inflater.inflate(R.layout.fragment_top_ten, container, false);
+    @Override
+    public void onCreate(Bundle savedInstanceState) {
+        Log.d(TAG, "onCreate...");
+        super.onCreate(savedInstanceState);
 
-        artistId = ((TopTenActivity)getActivity()).getArtistId();
+        artistId = ((TopTenActivity)listener).getArtistId();
 
         // create the adapter to convert the results into views
-        adapter = new TrackAdapter(getActivity(), new ArrayList<Track>());
+        adapter = new TrackAdapter(listener, new ArrayList<Track>());
 
+        // get tracks via SpotifyService
+        new TracksTask().execute(artistId);
+    }
+
+    @Override
+    public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
+        Log.d(TAG, "onCreateView...");
+        View view = inflater.inflate(R.layout.fragment_top_ten, container, false);
         listTracks = (ListView)view.findViewById(R.id.lstTracks);
         listTracks.setAdapter(adapter);
-
-        new TracksTask().execute(artistId);
-
         return view;
     }
 
@@ -73,10 +84,15 @@ public class TopTenActivityFragment extends Fragment {
 
         @Override
         protected void onPostExecute(List<Track> tracks) {
-            Log.d(TAG, "chegou... " + tracks);
-            if (tracks != null) {
-                adapter.clear();
+            Log.d(TAG, "Got results... " + tracks);
+
+            adapter.clear();
+            if (tracks != null && !tracks.isEmpty()) {
                 adapter.addAll(tracks);
+            }
+            else {
+                String msg = "Sorry, no tracks for your artist";
+                Toast.makeText(listener, msg, Toast.LENGTH_SHORT).show();
             }
         }
     }
@@ -125,6 +141,10 @@ public class TopTenActivityFragment extends Fragment {
         }
     }
 
-
+    @Override
+    public void onPause() {
+        Log.d(TAG, "onPause...");
+        super.onPause();
+    }
 
 }
