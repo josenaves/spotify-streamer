@@ -18,8 +18,10 @@ import android.widget.Toast;
 
 import com.squareup.picasso.Picasso;
 
+import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.List;
+
 
 import kaaes.spotify.webapi.android.SpotifyService;
 import kaaes.spotify.webapi.android.models.Track;
@@ -29,13 +31,19 @@ public class TopTenActivityFragment extends Fragment {
 
     public static final String TAG = TopTenActivityFragment.class.getSimpleName();
 
+    private static final String BUNDLE_ARTIST = "artist";
+    private static final String BUNDLE_ADAPTER = "adapter";
+
     private SpotifyService spotifyService = SpotifyRestService.getInstance("BR");
 
-    private String artistId;
     private ListView listTracks;
-    private TrackAdapter adapter;
 
     private FragmentActivity listener;
+
+    protected String artistId;
+
+    protected TrackAdapter adapter;
+
 
     public TopTenActivityFragment() {
     }
@@ -51,6 +59,22 @@ public class TopTenActivityFragment extends Fragment {
     public void onCreate(Bundle savedInstanceState) {
         Log.d(TAG, "onCreate...");
         super.onCreate(savedInstanceState);
+
+        setRetainInstance(true);
+
+//        if (savedInstanceState != null) {
+//            adapter = (TrackAdapter)savedInstanceState.getSerializable(BUNDLE_ADAPTER);
+//            artistId = savedInstanceState.getString(BUNDLE_ARTIST);
+//        }
+//        else {
+//            artistId = ((TopTenActivity)listener).getArtistId();
+//
+//            // create the adapter to convert the results into views
+//            adapter = new TrackAdapter(listener, new ArrayList<Track>());
+//
+//            // get tracks via SpotifyService
+//            new TracksTask().execute(artistId);
+//        }
 
         artistId = ((TopTenActivity)listener).getArtistId();
 
@@ -70,6 +94,17 @@ public class TopTenActivityFragment extends Fragment {
         return view;
     }
 
+    @Override
+    public void onSaveInstanceState(Bundle outState) {
+        Log.d(TAG, "onSaveInstanceState...");
+
+        // TODO make it work
+        //outState.putSerializable(BUNDLE_ADAPTER, adapter);
+        outState.putString(BUNDLE_ARTIST, artistId);
+
+        super.onSaveInstanceState(outState);
+    }
+
     /**
      * AsyncTask for doing network stuff off the main thread
      */
@@ -77,6 +112,7 @@ public class TopTenActivityFragment extends Fragment {
 
         @Override
         protected List<Track> doInBackground(String... params) {
+            Log.d(TAG, "Get tracks on the interwebs...");
             Tracks tracks = spotifyService.getArtistTopTrack(params[0]);
             Log.d(TAG, "Tracks = " + tracks.tracks);
             return tracks.tracks;
@@ -109,7 +145,7 @@ public class TopTenActivityFragment extends Fragment {
         public TrackAdapter(Context context, List<Track> tracks) {
             super(context, R.layout.list_item_track, tracks);
             this.context = context;
-            this.tracks = tracks;
+            this.tracks = new ArrayList<>(tracks);
         }
 
         @Override
@@ -139,6 +175,8 @@ public class TopTenActivityFragment extends Fragment {
 
             return convertView;
         }
+
+        public List<Track> getValues() { return tracks; }
     }
 
     @Override

@@ -23,14 +23,13 @@ import android.widget.Toast;
 
 import com.squareup.picasso.Picasso;
 
+import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.List;
 
 import kaaes.spotify.webapi.android.SpotifyService;
 import kaaes.spotify.webapi.android.models.Artist;
 import kaaes.spotify.webapi.android.models.ArtistsPager;
-
-
 
 /**
  * A placeholder fragment containing a simple view.
@@ -64,6 +63,8 @@ public class MainActivityFragment extends Fragment {
     public void onCreate(Bundle savedInstanceState) {
         Log.d(TAG, "onCreate...");
         super.onCreate(savedInstanceState);
+
+        setRetainInstance(true);
 
         // create the adapter to convert the results into views
         adapter = new ArtistAdapter(listener, new ArrayList<Artist>());
