@@ -5,12 +5,13 @@
 
     <item android:id="@+id/action_settings"
         android:title="@string/action_settings"
-        android:orderInCategory="1"
-        app:showAsAction="never" />
+        android:orderInCategory="200"
+        android:icon="@android:drawable/ic_menu_preferences"
+        app:showAsAction="ifRoom" />
 
     <item
         android:id="@+id/miActionProgress"
-        android:title="Loading..."
+        android:title="@string/message_loading"
         android:visible="false"
         android:orderInCategory="10"
         app:showAsAction="ifRoom"

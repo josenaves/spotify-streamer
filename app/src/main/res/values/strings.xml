@@ -8,7 +8,114 @@
 
     <string name="title_activity_top_ten">Top 10 Tracks</string>
 
+    <!-- settings -->
     <string name="action_settings">Settings</string>
 
+    <string name="title_top10_settings_section">Top 10 Tracks location</string>
+
+    <string name="title_countries">Location for Top 10 tracks</string>
+    <string name="title_summary">"Select the country for Top 10 Tracks data</string>
+    <string name="dialog_title_country_selection">Choose country location</string>
+
+    <string name="message_loading">Loading…</string>
+
+    <array name="country_name">
+        <item>Argentina</item>
+        <item>Austria</item>
+        <item>Australia</item>
+        <item>Belgium</item>
+        <item>Brazil</item>
+        <item>Bulgaria</item>
+        <item>Chile</item>
+        <item>Cook Islands</item>
+        <item>Colombia</item>
+        <item>Costa Rica</item>
+        <item>Czech Republic</item>
+        <item>Germany</item>
+        <item>Denmark</item>
+        <item>Ecuador</item>
+        <item>Estonia</item>
+        <item>Spain</item>
+        <item>Finland</item>
+        <item>France</item>
+        <item>United Kingdon</item>
+        <item>Greece</item>
+        <item>Guatemala</item>
+        <item>Hong Kong</item>
+        <item>Hungrary</item>
+        <item>Ireland</item>
+        <item>Iceland</item>
+        <item>Italy</item>
+        <item>Liechtenstein</item>
+        <item>Lithuania</item>
+        <item>Luxembourg</item>
+        <item>Latvia</item>
+        <item>Mexico</item>
+        <item>Malaysia</item>
+        <item>Netherlands</item>
+        <item>Norway</item>
+        <item>New Zealand</item>
+        <item>Peru</item>
+        <item>Poland</item>
+        <item>Portugal</item>
+        <item>Sweden</item>
+        <item>Singapore</item>
+        <item>Slovakia</item>
+        <item>El Salvador</item>
+        <item>Turkey</item>
+        <item>Taiwan</item>
+        <item>United States</item>
+        <item>Uruguay</item>
+    </array>
+
+
+    <array name="country_code">
+        <item>AR</item>
+        <item>AT</item>
+        <item>AU</item>
+        <item>BE</item>
+        <item>BR</item>
+        <item>BG</item>
+        <item>CH</item>
+        <item>CL</item>
+        <item>CO</item>
+        <item>CR</item>
+        <item>CZ</item>
+        <item>DE</item>
+        <item>DK</item>
+        <item>EC</item>
+        <item>EE</item>
+        <item>ES</item>
+        <item>FI</item>
+        <item>FR</item>
+        <item>GB</item>
+        <item>GR</item>
+        <item>GT</item>
+        <item>HK</item>
+        <item>HU</item>
+        <item>IE</item>
+        <item>IS</item>
+        <item>IT</item>
+        <item>LI</item>
+        <item>LT</item>
+        <item>LU</item>
+        <item>LV</item>
+        <item>MX</item>
+        <item>MY</item>
+        <item>NL</item>
+        <item>NO</item>
+        <item>NZ</item>
+        <item>PE</item>
+        <item>PL</item>
+        <item>PT</item>
+        <item>SE</item>
+        <item>SG</item>
+        <item>SK</item>
+        <item>SV</item>
+        <item>TR</item>
+        <item>TW</item>
+        <item>US</item>
+        <item>UY</item>
+    </array>
 
 </resources>

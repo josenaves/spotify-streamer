@@ -3,7 +3,9 @@ package com.josenaves.spotifystreamer;
 import android.app.Activity;
 import android.content.Context;
 import android.content.Intent;
+import android.content.SharedPreferences;
 import android.os.AsyncTask;
+import android.preference.PreferenceManager;
 import android.support.v4.app.Fragment;
 import android.os.Bundle;
 import android.support.v4.app.FragmentActivity;
@@ -13,6 +15,7 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.view.inputmethod.EditorInfo;
+import android.view.inputmethod.InputMethodManager;
 import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
 import android.widget.EditText;
@@ -23,7 +26,6 @@ import android.widget.Toast;
 
 import com.squareup.picasso.Picasso;
 
-import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -41,10 +43,9 @@ public class MainActivityFragment extends Fragment {
     public static final String ARTIST_ID = "artist_id";
     public static final String ARTIST_NAME = "artist_name";
 
-    private SpotifyService spotifyService = SpotifyRestService.getInstance("BR");
+    private SpotifyService spotifyService;
 
     private EditText txtSearch;
-    private ListView lstResults;
 
     private ArtistAdapter adapter;
     private FragmentActivity listener;
@@ -65,6 +66,10 @@ public class MainActivityFragment extends Fragment {
         super.onCreate(savedInstanceState);
 
         setRetainInstance(true);
+        SharedPreferences sharedPreferences = PreferenceManager.getDefaultSharedPreferences(getActivity());
+        String country = sharedPreferences.getString(SettingsActivity.KEY_LOCATION, "BR");
+
+        spotifyService = SpotifyRestService.getInstance(country);
 
         // create the adapter to convert the results into views
         adapter = new ArtistAdapter(listener, new ArrayList<Artist>());
@@ -82,8 +87,10 @@ public class MainActivityFragment extends Fragment {
                 if (keyCode == EditorInfo.IME_ACTION_SEARCH ||
                     keyCode == EditorInfo.IME_ACTION_DONE ||
                     event.getAction() == KeyEvent.ACTION_DOWN &&
-                    event.getAction() == KeyEvent.ACTION_DOWN &&
                     event.getKeyCode() == KeyEvent.KEYCODE_ENTER) {
+
+                    InputMethodManager imm = (InputMethodManager)listener.getSystemService(Context.INPUT_METHOD_SERVICE);
+                    imm.hideSoftInputFromWindow(txtSearch.getWindowToken(), 0);
 
                     String query = txtSearch.getText().toString();
                     Log.d(TAG, "Searching " + query);
@@ -97,12 +104,12 @@ public class MainActivityFragment extends Fragment {
         });
 
         // attach the adapter to the listview
-        lstResults = (ListView) view.findViewById(R.id.lstResults);
+        ListView lstResults = (ListView) view.findViewById(R.id.lstResults);
         lstResults.setAdapter(adapter);
         lstResults.setOnItemClickListener(new AdapterView.OnItemClickListener() {
             @Override
             public void onItemClick(AdapterView<?> adapterView, View view, int position, long id) {
-                Artist artist = (Artist)adapterView.getItemAtPosition(position);
+                Artist artist = (Artist) adapterView.getItemAtPosition(position);
                 Intent intent = new Intent(listener, TopTenActivity.class);
                 intent.putExtra(ARTIST_ID, artist.id);
                 intent.putExtra(ARTIST_NAME, artist.name);

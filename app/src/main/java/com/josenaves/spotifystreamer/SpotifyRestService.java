@@ -5,7 +5,7 @@ import kaaes.spotify.webapi.android.SpotifyService;
 import retrofit.RequestInterceptor;
 import retrofit.RestAdapter;
 
-public class SpotifyRestService {
+class SpotifyRestService {
 
     public static SpotifyService getInstance(final String country) {
         RestAdapter restAdapter = new RestAdapter.Builder()

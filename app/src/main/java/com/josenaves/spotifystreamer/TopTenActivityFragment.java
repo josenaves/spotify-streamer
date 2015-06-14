@@ -2,7 +2,9 @@ package com.josenaves.spotifystreamer;
 
 import android.app.Activity;
 import android.content.Context;
+import android.content.SharedPreferences;
 import android.os.AsyncTask;
+import android.preference.PreferenceManager;
 import android.support.v4.app.Fragment;
 import android.os.Bundle;
 import android.support.v4.app.FragmentActivity;
@@ -18,7 +20,6 @@ import android.widget.Toast;
 
 import com.squareup.picasso.Picasso;
 
-import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -34,15 +35,13 @@ public class TopTenActivityFragment extends Fragment {
     private static final String BUNDLE_ARTIST = "artist";
     private static final String BUNDLE_ADAPTER = "adapter";
 
-    private SpotifyService spotifyService = SpotifyRestService.getInstance("BR");
-
-    private ListView listTracks;
+    private SpotifyService spotifyService;
 
     private FragmentActivity listener;
 
-    protected String artistId;
+    private String artistId;
 
-    protected TrackAdapter adapter;
+    private TrackAdapter adapter;
 
 
     public TopTenActivityFragment() {
@@ -62,19 +61,10 @@ public class TopTenActivityFragment extends Fragment {
 
         setRetainInstance(true);
 
-//        if (savedInstanceState != null) {
-//            adapter = (TrackAdapter)savedInstanceState.getSerializable(BUNDLE_ADAPTER);
-//            artistId = savedInstanceState.getString(BUNDLE_ARTIST);
-//        }
-//        else {
-//            artistId = ((TopTenActivity)listener).getArtistId();
-//
-//            // create the adapter to convert the results into views
-//            adapter = new TrackAdapter(listener, new ArrayList<Track>());
-//
-//            // get tracks via SpotifyService
-//            new TracksTask().execute(artistId);
-//        }
+        SharedPreferences sharedPreferences = PreferenceManager.getDefaultSharedPreferences(getActivity());
+        String country = sharedPreferences.getString(SettingsActivity.KEY_LOCATION, "BR");
+
+        spotifyService = SpotifyRestService.getInstance(country);
 
         artistId = ((TopTenActivity)listener).getArtistId();
 
@@ -89,7 +79,7 @@ public class TopTenActivityFragment extends Fragment {
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
         Log.d(TAG, "onCreateView...");
         View view = inflater.inflate(R.layout.fragment_top_ten, container, false);
-        listTracks = (ListView)view.findViewById(R.id.lstTracks);
+        ListView listTracks = (ListView) view.findViewById(R.id.lstTracks);
         listTracks.setAdapter(adapter);
         return view;
     }

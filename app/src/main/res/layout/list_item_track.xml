@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
     android:orientation="horizontal"
-    android:padding="@dimen/activity_horizontal_margin"
+    android:padding="@dimen/activity_margin"
     android:layout_width="match_parent"
     android:layout_height="wrap_content">
     
@@ -16,17 +16,15 @@
         android:layout_height="match_parent"
         android:orientation="vertical"
         android:gravity="center_vertical"
-        android:layout_marginLeft="16dp" >
+        android:layout_marginLeft="@dimen/activity_margin" >
 
         <TextView
             android:id="@+id/txtTrackName"
-            android:text="Fascination Street"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content" />
 
         <TextView
             android:id="@+id/txtAlbumName"
-            android:text="Desintegration"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content" />
 

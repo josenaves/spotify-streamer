@@ -1,0 +1,17 @@
+<?xml version="1.0" encoding="utf-8"?>
+<PreferenceScreen xmlns:android="http://schemas.android.com/apk/res/android">
+
+    <PreferenceCategory android:title="@string/title_top10_settings_section">
+
+        <ListPreference
+            android:title="@string/title_countries"
+            android:summary="@string/title_summary"
+            android:dialogTitle="@string/dialog_title_country_selection"
+            android:key="@string/message_loading"
+            android:defaultValue="BR"
+            android:entries="@array/country_name"
+            android:entryValues="@array/country_code" />
+
+    </PreferenceCategory>
+
+</PreferenceScreen>

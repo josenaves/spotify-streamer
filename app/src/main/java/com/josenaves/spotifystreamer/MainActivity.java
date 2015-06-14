@@ -1,5 +1,6 @@
 package com.josenaves.spotifystreamer;
 
+import android.content.Intent;
 import android.os.Bundle;
 import android.support.v4.view.MenuItemCompat;
 import android.support.v7.app.AppCompatActivity;
@@ -7,7 +8,6 @@ import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.widget.ProgressBar;
-
 
 public class MainActivity extends AppCompatActivity {
 
@@ -36,9 +36,6 @@ public class MainActivity extends AppCompatActivity {
         // Store instance of the menu item containing progress
         actionProgressItem = menu.findItem(R.id.miActionProgress);
 
-        // Extract the action-view from the menu item
-        ProgressBar v =  (ProgressBar) MenuItemCompat.getActionView(actionProgressItem);
-
         // Return to finish
         return super.onPrepareOptionsMenu(menu);
     }
@@ -50,8 +47,9 @@ public class MainActivity extends AppCompatActivity {
         // as you specify a parent activity in AndroidManifest.xml.
         int id = item.getItemId();
 
-        //noinspection SimplifiableIfStatement
         if (id == R.id.action_settings) {
+            Intent i = new Intent(this, SettingsActivity.class);
+            startActivity(i);
             return true;
         }
 
