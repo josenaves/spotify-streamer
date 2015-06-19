@@ -15,7 +15,12 @@
 
     <string name="title_countries">Location for Top 10 tracks</string>
     <string name="title_summary">"Select the country for Top 10 Tracks data</string>
+
+    <string name="title_activity_player">Player</string>
+
     <string name="dialog_title_country_selection">Choose country location</string>
+
+
 
     <string name="message_loading">Loading…</string>
 
