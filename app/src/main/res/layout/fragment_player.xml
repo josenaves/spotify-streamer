@@ -6,15 +6,96 @@
     android:padding="@dimen/activity_margin"
     tools:context=".FragmentPlayer">
 
-    <EditText
-        android:id="@+id/txtSearch"
-        android:hint="@string/hint_search_artist"
-        android:singleLine="true"
-        android:layout_alignParentTop="true"
+    <TextView
+        android:id="@+id/txtArtist"
+        android:text="Coldplay"
+        android:gravity="center_horizontal"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content" />
+
+    <TextView
+        android:id="@+id/txtAlbum"
+        android:text="Princess of China"
+        android:gravity="center_horizontal"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content" />
+
+    <ImageView
+        android:id="@+id/imgArt"
+        android:layout_width="match_parent"
+        android:layout_height="196dp" />
+
+    <TextView
+        android:id="@+id/txtTrack"
+        android:text="Princess of China"
+        android:gravity="center_horizontal"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content" />
+
+    <ProgressBar
+        android:id="@+id/pbTrackLength"
+        style="?android:attr/progressBarStyleHorizontal"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:imeOptions="actionSearch"
-        android:inputType="text" />
+        android:gravity="center_horizontal" />
+
+    <LinearLayout
+        android:orientation="horizontal"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content">
+
+        <TextView
+            android:text="0:00"
+            android:gravity="left"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_weight="1" />
+
+        <TextView
+            android:id="@+id/txtLength"
+            android:text="0:30"
+            android:gravity="right"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_weight="1" />
+
+    </LinearLayout>
+
+    <LinearLayout
+        android:orientation="horizontal"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:gravity="bottom">
+
+        <ImageButton
+            android:id="@+id/btnPrevious"
+            android:src="@android:drawable/ic_media_previous"
+            android:layout_weight="1"
+            android:layout_margin="@dimen/media_buttons_margin"
+            android:gravity="left"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content" />
+
+        <ImageButton
+            android:id="@+id/btnPlay"
+            android:src="@android:drawable/ic_media_play"
+            android:layout_margin="@dimen/media_buttons_margin"
+            android:layout_weight="1"
+            android:gravity="center"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content" />
+
+        <ImageButton
+            android:id="@+id/btnNext"
+            android:src="@android:drawable/ic_media_next"
+            android:layout_margin="@dimen/media_buttons_margin"
+            android:layout_weight="1"
+            android:gravity="right"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content" />
+
+    </LinearLayout>
+
 
 
 
