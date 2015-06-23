@@ -17,8 +17,8 @@ public class TopTenActivity extends AppCompatActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
 
-        artistName = getIntent().getStringExtra(MainActivityFragment.ARTIST_NAME);
-        artistId = getIntent().getStringExtra(MainActivityFragment.ARTIST_ID);
+        artistName = getIntent().getStringExtra(Constants.ARTIST_NAME);
+        artistId = getIntent().getStringExtra(Constants.ARTIST_ID);
 
         setContentView(R.layout.activity_top_ten);
 

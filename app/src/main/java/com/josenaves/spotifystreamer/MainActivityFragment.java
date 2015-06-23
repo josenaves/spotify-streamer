@@ -40,8 +40,6 @@ public class MainActivityFragment extends Fragment {
 
     public static final String TAG = MainActivityFragment.class.getSimpleName();
 
-    public static final String ARTIST_ID = "artist_id";
-    public static final String ARTIST_NAME = "artist_name";
 
     private SpotifyService spotifyService;
 
@@ -111,8 +109,8 @@ public class MainActivityFragment extends Fragment {
             public void onItemClick(AdapterView<?> adapterView, View view, int position, long id) {
                 Artist artist = (Artist) adapterView.getItemAtPosition(position);
                 Intent intent = new Intent(listener, TopTenActivity.class);
-                intent.putExtra(ARTIST_ID, artist.id);
-                intent.putExtra(ARTIST_NAME, artist.name);
+                intent.putExtra(Constants.ARTIST_ID, artist.id);
+                intent.putExtra(Constants.ARTIST_NAME, artist.name);
                 startActivity(intent);
             }
         });

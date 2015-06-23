@@ -33,6 +33,13 @@ public class PlayerFragment extends Fragment {
 
     private FragmentActivity listener;
 
+    private String albumName;
+    private String artistId;
+    private String artistName;
+    private String trackId;
+    private String trackArt;
+    private String trackUrl;
+    private String trackName;
 
     public PlayerFragment() {
     }
@@ -49,6 +56,14 @@ public class PlayerFragment extends Fragment {
         Log.d(TAG, "onCreate...");
         super.onCreate(savedInstanceState);
 
+        albumName = ((PlayerActivity)listener).getAlbumName();
+        artistId = ((PlayerActivity)listener).getArtistId();
+        artistName = ((PlayerActivity)listener).getArtistName();
+        trackId = ((PlayerActivity)listener).getTrackId();
+        trackArt = ((PlayerActivity)listener).getTrackArt();
+        trackName = ((PlayerActivity)listener).getTrackName();
+        trackUrl = ((PlayerActivity)listener).getTrackUrl();
+
         setRetainInstance(true);
     }
 
@@ -56,6 +71,12 @@ public class PlayerFragment extends Fragment {
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
         Log.d(TAG, "onCreateView...");
         View view = inflater.inflate(R.layout.fragment_player, container, false);
+
+        String msg = "trackId = " + trackId + " - artist = " + artistId + " - artistName = "
+                + artistName  + " - trackArt = " + trackArt + " - trackName = " + trackName
+                + " - trackUrl = " + trackUrl + " - albumName = " + albumName;
+
+        Toast.makeText(listener.getBaseContext(), msg, Toast.LENGTH_LONG).show();
         return view;
     }
 

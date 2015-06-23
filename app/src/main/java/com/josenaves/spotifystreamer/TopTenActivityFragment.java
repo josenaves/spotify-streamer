@@ -34,14 +34,12 @@ public class TopTenActivityFragment extends Fragment {
 
     public static final String TAG = TopTenActivityFragment.class.getSimpleName();
 
-    private static final String BUNDLE_ARTIST = "artist";
-    private static final String BUNDLE_ADAPTER = "adapter";
-
     private SpotifyService spotifyService;
 
     private FragmentActivity listener;
 
     private String artistId;
+    private String artistName;
 
     private TrackAdapter adapter;
 
@@ -64,11 +62,12 @@ public class TopTenActivityFragment extends Fragment {
         setRetainInstance(true);
 
         SharedPreferences sharedPreferences = PreferenceManager.getDefaultSharedPreferences(getActivity());
-        String country = sharedPreferences.getString(SettingsActivity.KEY_LOCATION, "BR");
+        String country = sharedPreferences.getString(SettingsActivity.KEY_LOCATION, SettingsActivity.DEFAULT_LOCATION);
 
         spotifyService = SpotifyRestService.getInstance(country);
 
         artistId = ((TopTenActivity)listener).getArtistId();
+        artistName = ((TopTenActivity)listener).getArtistName();
 
         // create the adapter to convert the results into views
         adapter = new TrackAdapter(listener, new ArrayList<Track>());
@@ -89,9 +88,20 @@ public class TopTenActivityFragment extends Fragment {
                 Track track = (Track)parent.getItemAtPosition(position);
 
                 // pass data for next activity
+                Intent intent = new Intent(getActivity(), PlayerActivity.class);
+                intent.putExtra(Constants.ALBUM_NAME, track.album.name);
+                intent.putExtra(Constants.ARTIST_ID, artistId);
+                intent.putExtra(Constants.ARTIST_NAME, artistName);
+                intent.putExtra(Constants.TRACK_ID, track.id);
+                intent.putExtra(Constants.TRACK_NAME, track.name);
+                intent.putExtra(Constants.TRACK_URL, track.preview_url);
+
+                if (track.album.images.size() > 0) {
+                    intent.putExtra(Constants.TRACK_ART, track.album.images.get(0).url);
+                }
 
                 // call next activity
-                startActivity(new Intent(getActivity(), PlayerActivity.class));
+                startActivity(intent);
             }
         });
         return view;
@@ -103,7 +113,7 @@ public class TopTenActivityFragment extends Fragment {
 
         // TODO make it work
         //outState.putSerializable(BUNDLE_ADAPTER, adapter);
-        outState.putString(BUNDLE_ARTIST, artistId);
+        outState.putString(Constants.ARTIST_ID, artistId);
 
         super.onSaveInstanceState(outState);
     }

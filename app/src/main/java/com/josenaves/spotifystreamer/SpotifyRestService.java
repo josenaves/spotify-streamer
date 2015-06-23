@@ -7,6 +7,8 @@ import retrofit.RestAdapter;
 
 class SpotifyRestService {
 
+
+
     public static SpotifyService getInstance(final String country) {
         RestAdapter restAdapter = new RestAdapter.Builder()
                 .setRequestInterceptor(new RequestInterceptor() {
