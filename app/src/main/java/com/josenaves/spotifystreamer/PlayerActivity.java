@@ -1,10 +1,14 @@
 package com.josenaves.spotifystreamer;
 
 import android.content.Intent;
+import android.media.AudioManager;
+import android.media.MediaPlayer;
 import android.os.Bundle;
 import android.support.v7.app.AppCompatActivity;
 import android.view.Menu;
 import android.view.MenuItem;
+
+import java.io.IOException;
 
 public class PlayerActivity extends AppCompatActivity {
 
@@ -17,7 +21,6 @@ public class PlayerActivity extends AppCompatActivity {
     private String trackArt;
     private String trackUrl;
     private String albumName;
-
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
