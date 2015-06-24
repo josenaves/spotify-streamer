@@ -20,6 +20,8 @@ import android.widget.Toast;
 
 import com.squareup.picasso.Picasso;
 
+import org.w3c.dom.Text;
+
 import java.util.ArrayList;
 import java.util.List;
 
@@ -31,6 +33,8 @@ public class PlayerFragment extends Fragment {
 
     public static final String TAG = PlayerFragment.class.getSimpleName();
 
+    private static final String TRACK_LENGTH = "0:30";
+
     private FragmentActivity listener;
 
     private String albumName;
@@ -40,6 +44,13 @@ public class PlayerFragment extends Fragment {
     private String trackArt;
     private String trackUrl;
     private String trackName;
+
+    private TextView txtArtist;
+    private TextView txtAlbum;
+    private TextView txtTrack;
+    private TextView txtTrackLength;
+    private ImageView imgArt;
+
 
     public PlayerFragment() {
     }
@@ -77,6 +88,32 @@ public class PlayerFragment extends Fragment {
                 + " - trackUrl = " + trackUrl + " - albumName = " + albumName;
 
         Toast.makeText(listener.getBaseContext(), msg, Toast.LENGTH_LONG).show();
+
+        Log.d(TAG, msg);
+
+
+        txtArtist = (TextView) view.findViewById(R.id.txtArtist);
+        txtArtist.setText(artistName);
+
+        txtAlbum = (TextView) view.findViewById(R.id.txtAlbum);
+        txtAlbum.setText(albumName);
+
+        txtTrack = (TextView) view.findViewById(R.id.txtTrack);
+        txtTrack.setText(trackName);
+
+        txtTrackLength = (TextView) view.findViewById(R.id.txtLength);
+        txtTrackLength.setText(TRACK_LENGTH);
+
+
+        if (trackArt != null) {
+            imgArt = (ImageView) view.findViewById(R.id.imgArt);
+            Picasso.with(listener.getBaseContext()).
+                    load(trackArt).
+                    resize(400, 400).
+                    centerCrop().
+                    into(imgArt);
+        }
+
         return view;
     }
 

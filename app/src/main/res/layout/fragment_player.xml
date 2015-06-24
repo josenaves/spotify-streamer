@@ -27,7 +27,7 @@
 
     <TextView
         android:id="@+id/txtTrack"
-        android:text="Princess of China"
+        android:text="Yellow"
         android:gravity="center_horizontal"
         android:layout_width="match_parent"
         android:layout_height="wrap_content" />
