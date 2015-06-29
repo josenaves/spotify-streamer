@@ -69,7 +69,7 @@
         android:gravity="bottom">
 
         <ImageButton
-            android:id="@+id/btnRewind"
+            android:id="@+id/btnPrevious"
             android:src="@android:drawable/ic_media_previous"
             android:layout_weight="1"
             android:layout_margin="@dimen/media_buttons_margin"
@@ -87,7 +87,7 @@
             android:layout_height="wrap_content" />
 
         <ImageButton
-            android:id="@+id/btnForward"
+            android:id="@+id/btnNext"
             android:src="@android:drawable/ic_media_next"
             android:layout_margin="@dimen/media_buttons_margin"
             android:layout_weight="1"

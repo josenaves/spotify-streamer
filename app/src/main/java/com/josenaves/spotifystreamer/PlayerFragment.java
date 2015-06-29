@@ -3,6 +3,8 @@ package com.josenaves.spotifystreamer;
 import android.app.Activity;
 import android.content.Context;
 import android.content.SharedPreferences;
+import android.content.res.Resources;
+import android.graphics.drawable.Drawable;
 import android.media.AudioManager;
 import android.media.MediaPlayer;
 import android.os.AsyncTask;
@@ -54,12 +56,16 @@ public class PlayerFragment extends Fragment {
     private ImageView imgArt;
     private SeekBar seekBar;
     private ImageButton btnPlay;
-    private ImageButton btnRewind;
-    private ImageButton btnForward;
+    private ImageButton btnPrevious;
+    private ImageButton btnNext;
 
+    private Drawable iconPlay;
+    private Drawable iconPause;
 
     private int timeElapsed;
     private int finalTime;
+
+    private boolean isPlaying = false;
 
     // http://examples.javacodegeeks.com/android/android-mediaplayer-example/
     private MediaPlayer mediaPlayer;
@@ -120,6 +126,10 @@ public class PlayerFragment extends Fragment {
             trackName = ((PlayerActivity)listener).getTrackName();
             trackUrl = ((PlayerActivity)listener).getTrackUrl();
         }
+
+        Resources resources = getResources();
+        iconPlay = resources.getDrawable(resources.getIdentifier("@android:drawable/ic_media_play", null, null));
+        iconPause = resources.getDrawable(resources.getIdentifier("@android:drawable/ic_media_pause", null, null));
     }
 
     @Override
@@ -135,13 +145,30 @@ public class PlayerFragment extends Fragment {
 
         Log.d(TAG, msg);
 
-        btnForward = (ImageButton)view.findViewById(R.id.btnForward);
-        btnRewind = (ImageButton)view.findViewById(R.id.btnRewind);
+        btnNext = (ImageButton)view.findViewById(R.id.btnNext);
+        btnPrevious = (ImageButton)view.findViewById(R.id.btnPrevious);
         btnPlay = (ImageButton)view.findViewById(R.id.btnPlay);
+        btnPlay.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                if (! isPlaying) {
+                    prepareAndPlayMedia();
+
+                    // change button play to pause
+                    btnPlay.setImageDrawable(iconPause);
+                }
+                else if (isPlaying) {
+                    mediaPlayer.pause();
+                    // change button play to play
+                    btnPlay.setImageDrawable(iconPlay);
+                    isPlaying = false;
+                }
+            }
+        });
 
         seekBar = (SeekBar)view.findViewById(R.id.seekTrackLength);
         seekBar.setMax(MAX_LENGTH_MILLI);
-        seekBar.setClickable(false); // the user cannot drag the seekbar to any point
+        seekBar.setClickable(true);
 
         txtArtist = (TextView) view.findViewById(R.id.txtArtist);
         txtArtist.setText(artistName);
@@ -192,24 +219,23 @@ public class PlayerFragment extends Fragment {
     };
 
 
-    private void prepareMedia()  {
+    private void prepareAndPlayMedia()  {
         mediaPlayer = new MediaPlayer();
         mediaPlayer.setAudioStreamType(AudioManager.STREAM_MUSIC);
-
         try {
             mediaPlayer.setDataSource(trackUrl);
         }
         catch (IOException e) {
-            e.printStackTrace();
+            Log.e(TAG, e.getMessage());
         }
 
         mediaPlayer.setOnPreparedListener(new MediaPlayer.OnPreparedListener() {
             @Override
             public void onPrepared(MediaPlayer mp) {
-
+                mediaPlayer.start();
+                isPlaying = true;
             }
         });
-
         mediaPlayer.prepareAsync();
     }
 
