@@ -168,6 +168,20 @@ public class PlayerFragment extends Fragment {
         seekBar = (SeekBar)view.findViewById(R.id.seekTrackLength);
         seekBar.setMax(MAX_LENGTH_MILLI);
         seekBar.setClickable(true);
+        seekBar.setOnSeekBarChangeListener(new SeekBar.OnSeekBarChangeListener() {
+            @Override
+            public void onProgressChanged(SeekBar seekBar, int progress, boolean fromUser) {
+                if (fromUser) mediaPlayer.seekTo(progress);
+            }
+
+            @Override
+            public void onStartTrackingTouch(SeekBar seekBar) {
+            }
+
+            @Override
+            public void onStopTrackingTouch(SeekBar seekBar) {
+            }
+        });
 
         txtArtist = (TextView) view.findViewById(R.id.txtArtist);
         txtArtist.setText(artistName);
@@ -226,7 +240,7 @@ public class PlayerFragment extends Fragment {
         mediaPlayer.setOnCompletionListener(new MediaPlayer.OnCompletionListener() {
             @Override
             public void onCompletion(MediaPlayer mp) {
-
+                durationHandler.removeCallbacks(updateSeekBar);
             }
         });
 
@@ -255,10 +269,11 @@ public class PlayerFragment extends Fragment {
 
     @Override
     public void onStop() {
+        super.onStop();
         if (mediaPlayer != null) {
             mediaPlayer.release();
             mediaPlayer = null;
         }
-        super.onStop();
+        durationHandler.removeCallbacks(updateSeekBar);
     }
 }
