@@ -63,7 +63,6 @@ public class PlayerFragment extends Fragment {
     private Drawable iconPause;
 
     private int timeElapsed;
-    private int finalTime;
 
     private boolean isPlaying = false;
 
@@ -205,19 +204,14 @@ public class PlayerFragment extends Fragment {
             //set seekbar progress
             seekBar.setProgress((int) timeElapsed);
 
-            //set time remaining
-            double timeRemaining = finalTime - timeElapsed;
-
-            txtElapsed.setText(
-                    String.format("%d min, %d sec", TimeUnit.MILLISECONDS.toMinutes((long) timeRemaining),
-                            TimeUnit.MILLISECONDS.toSeconds((long) timeRemaining) -
-                            TimeUnit.MINUTES.toSeconds(TimeUnit.MILLISECONDS.toMinutes((long) timeRemaining))));
+            txtElapsed.setText(String.format("%01d:%02d",
+                    TimeUnit.MILLISECONDS.toMinutes((long) timeElapsed),
+                    TimeUnit.MILLISECONDS.toSeconds((long) timeElapsed)));
 
             //repeat yourself that again in 100 milliseconds
             durationHandler.postDelayed(this, 100);
         }
     };
-
 
     private void prepareAndPlayMedia()  {
         mediaPlayer = new MediaPlayer();
@@ -229,16 +223,23 @@ public class PlayerFragment extends Fragment {
             Log.e(TAG, e.getMessage());
         }
 
+        mediaPlayer.setOnCompletionListener(new MediaPlayer.OnCompletionListener() {
+            @Override
+            public void onCompletion(MediaPlayer mp) {
+
+            }
+        });
+
         mediaPlayer.setOnPreparedListener(new MediaPlayer.OnPreparedListener() {
             @Override
             public void onPrepared(MediaPlayer mp) {
                 mediaPlayer.start();
+                updateSeekBar.run();
                 isPlaying = true;
             }
         });
         mediaPlayer.prepareAsync();
     }
-
 
     @Override
     public void onSaveInstanceState(Bundle outState) {
@@ -260,5 +261,4 @@ public class PlayerFragment extends Fragment {
         }
         super.onStop();
     }
-
 }
