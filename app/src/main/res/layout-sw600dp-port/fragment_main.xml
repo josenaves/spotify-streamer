@@ -1,0 +1,24 @@
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:padding="@dimen/activity_margin"
+    tools:context="com.josenaves.spotifystreamer.MainActivityFragment">
+
+    <EditText
+        android:id="@+id/txtSearch"
+        android:hint="@string/hint_search_artist"
+        android:singleLine="true"
+        android:layout_alignParentTop="true"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:imeOptions="actionSearch"
+        android:inputType="text" />
+
+    <ListView
+        android:id="@+id/lstResults"
+        android:layout_below="@id/txtSearch"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"/>
+
+</RelativeLayout>

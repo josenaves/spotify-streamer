@@ -26,16 +26,17 @@ public class MainActivity extends AppCompatActivity {
         setContentView(R.layout.activity_main);
 
         // if search_container is present then the app is running on a tablet
-        mTwoPane = Util.isTabletMode(this);
+        mTwoPane = Util.isTwoPaneMode(this);
 
         Toast.makeText(this, mTwoPane? "---- We are on a tablet" : "------ We are on a phone", Toast.LENGTH_LONG).show();
 
-        FragmentManager fragmentManager = getSupportFragmentManager();
-        fragmentManager
-                .beginTransaction()
-                .add(R.id.search_container, new MainActivityFragment())
-                .addToBackStack(MainActivityFragment.TAG)
-                .commit();
+        if (mTwoPane) {
+            getSupportFragmentManager()
+                    .beginTransaction()
+                    .add(R.id.search_container, new MainActivityFragment())
+                    .addToBackStack(MainActivityFragment.TAG)
+                    .commit();
+        }
     }
 
     @Override

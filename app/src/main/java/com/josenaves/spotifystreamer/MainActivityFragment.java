@@ -137,7 +137,7 @@ public class MainActivityFragment extends Fragment {
         Log.d(TAG, "onActivityCreated");
         super.onActivityCreated(savedInstanceState);
 
-        mTwoPane = Util.isTabletMode(listener);
+        mTwoPane = Util.isTwoPaneMode(listener);
         Toast.makeText(listener, mTwoPane? "We are on a TABLET" : "We are on a phone", Toast.LENGTH_LONG).show();
     }
 
