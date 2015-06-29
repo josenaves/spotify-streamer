@@ -2,16 +2,18 @@ package com.josenaves.spotifystreamer;
 
 import android.content.Intent;
 import android.os.Bundle;
-import android.support.v4.view.MenuItemCompat;
+import android.support.v4.app.FragmentManager;
 import android.support.v7.app.AppCompatActivity;
 import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
-import android.widget.ProgressBar;
+import android.widget.Toast;
 
 public class MainActivity extends AppCompatActivity {
 
     public static final String TAG = MainActivity.class.getSimpleName();
+
+    private boolean mTwoPane;
 
     // Instance of the progress action-view
     private MenuItem actionProgressItem;
@@ -22,6 +24,18 @@ public class MainActivity extends AppCompatActivity {
         Log.d(TAG, "onCreate...");
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
+
+        // if search_container is present then the app is running on a tablet
+        mTwoPane = Util.isTabletMode(this);
+
+        Toast.makeText(this, mTwoPane? "---- We are on a tablet" : "------ We are on a phone", Toast.LENGTH_LONG).show();
+
+        FragmentManager fragmentManager = getSupportFragmentManager();
+        fragmentManager
+                .beginTransaction()
+                .add(R.id.search_container, new MainActivityFragment())
+                .addToBackStack(MainActivityFragment.TAG)
+                .commit();
     }
 
     @Override

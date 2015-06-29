@@ -9,6 +9,7 @@ import android.preference.PreferenceManager;
 import android.support.v4.app.Fragment;
 import android.os.Bundle;
 import android.support.v4.app.FragmentActivity;
+import android.support.v4.app.FragmentManager;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -41,10 +42,20 @@ public class TopTenActivityFragment extends Fragment {
     private String artistId;
     private String artistName;
 
+    private boolean mTwoPane = false;
+
     private TrackAdapter adapter;
 
-
     public TopTenActivityFragment() {
+    }
+
+    public static TopTenActivityFragment newInstance(String artistId, String artistName) {
+        TopTenActivityFragment topTenActivityFragment = new TopTenActivityFragment();
+        topTenActivityFragment.artistId = artistId;
+        topTenActivityFragment.artistName = artistName;
+
+        topTenActivityFragment.mTwoPane = true; // only true if newInstance method is called
+        return topTenActivityFragment;
     }
 
     @Override
@@ -66,8 +77,11 @@ public class TopTenActivityFragment extends Fragment {
 
         spotifyService = SpotifyRestService.getInstance(country);
 
-        artistId = ((TopTenActivity)listener).getArtistId();
-        artistName = ((TopTenActivity)listener).getArtistName();
+        if (!mTwoPane) {
+            // not in twopane - get those parameters from parent activity
+            artistId = ((TopTenActivity)listener).getArtistId();
+            artistName = ((TopTenActivity)listener).getArtistName();
+        }
 
         // create the adapter to convert the results into views
         adapter = new TrackAdapter(listener, new ArrayList<Track>());
@@ -85,23 +99,40 @@ public class TopTenActivityFragment extends Fragment {
         listTracks.setOnItemClickListener(new AdapterView.OnItemClickListener() {
             @Override
             public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
-                Track track = (Track)parent.getItemAtPosition(position);
+                Track track = (Track) parent.getItemAtPosition(position);
 
-                // pass data for next activity
-                Intent intent = new Intent(getActivity(), PlayerActivity.class);
-                intent.putExtra(Constants.ALBUM_NAME, track.album.name);
-                intent.putExtra(Constants.ARTIST_ID, artistId);
-                intent.putExtra(Constants.ARTIST_NAME, artistName);
-                intent.putExtra(Constants.TRACK_ID, track.id);
-                intent.putExtra(Constants.TRACK_NAME, track.name);
-                intent.putExtra(Constants.TRACK_URL, track.preview_url);
+                if (!mTwoPane) {
+                    // pass data for next activity
+                    Intent intent = new Intent(getActivity(), PlayerActivity.class);
+                    intent.putExtra(Constants.ALBUM_NAME, track.album.name);
+                    intent.putExtra(Constants.ARTIST_ID, artistId);
+                    intent.putExtra(Constants.ARTIST_NAME, artistName);
+                    intent.putExtra(Constants.TRACK_ID, track.id);
+                    intent.putExtra(Constants.TRACK_NAME, track.name);
+                    intent.putExtra(Constants.TRACK_URL, track.preview_url);
 
-                if (track.album.images.size() > 0) {
-                    intent.putExtra(Constants.TRACK_ART, track.album.images.get(0).url);
+                    if (track.album.images.size() > 0) {
+                        intent.putExtra(Constants.TRACK_ART, track.album.images.get(0).url);
+                    }
+
+                    // call next activity
+                    startActivity(intent);
                 }
+                else {
+                    // fragment mode
+                    String trackArt =
+                            track.album.images.size() > 0 ? track.album.images.get(0).url : null;
 
-                // call next activity
-                startActivity(intent);
+                    PlayerFragment playerFragment = PlayerFragment.newInstance(track.album.name,
+                            artistId, artistName, track.id, trackArt, track.name, track.preview_url);
+
+                    FragmentManager fragmentManager = getActivity().getSupportFragmentManager();
+                    fragmentManager
+                            .beginTransaction()
+                            .add(R.id.player_container, playerFragment)
+                            .addToBackStack(playerFragment.TAG)
+                            .commit();
+                }
             }
         });
         return view;

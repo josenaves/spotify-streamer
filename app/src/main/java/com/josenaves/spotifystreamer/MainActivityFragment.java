@@ -9,6 +9,7 @@ import android.preference.PreferenceManager;
 import android.support.v4.app.Fragment;
 import android.os.Bundle;
 import android.support.v4.app.FragmentActivity;
+import android.support.v4.app.FragmentManager;
 import android.util.Log;
 import android.view.KeyEvent;
 import android.view.LayoutInflater;
@@ -47,6 +48,8 @@ public class MainActivityFragment extends Fragment {
 
     private ArtistAdapter adapter;
     private FragmentActivity listener;
+
+    private boolean mTwoPane;
 
     public MainActivityFragment() {
     }
@@ -108,15 +111,34 @@ public class MainActivityFragment extends Fragment {
             @Override
             public void onItemClick(AdapterView<?> adapterView, View view, int position, long id) {
                 Artist artist = (Artist) adapterView.getItemAtPosition(position);
-                Intent intent = new Intent(listener, TopTenActivity.class);
-                intent.putExtra(Constants.ARTIST_ID, artist.id);
-                intent.putExtra(Constants.ARTIST_NAME, artist.name);
-                startActivity(intent);
+
+                if (mTwoPane) {
+                    TopTenActivityFragment topTenActivityFragment = TopTenActivityFragment.newInstance(artist.id, artist.name);
+
+                    FragmentManager fragmentManager = getFragmentManager();
+                    fragmentManager.beginTransaction()
+                            .replace(R.id.search_container, topTenActivityFragment)
+                            .commit();
+                }
+                else {
+                    Intent intent = new Intent(listener, TopTenActivity.class);
+                    intent.putExtra(Constants.ARTIST_ID, artist.id);
+                    intent.putExtra(Constants.ARTIST_NAME, artist.name);
+                    startActivity(intent);
+                }
             }
         });
 
-
         return view;
+    }
+
+    @Override
+    public void onActivityCreated(Bundle savedInstanceState) {
+        Log.d(TAG, "onActivityCreated");
+        super.onActivityCreated(savedInstanceState);
+
+        mTwoPane = Util.isTabletMode(listener);
+        Toast.makeText(listener, mTwoPane? "We are on a TABLET" : "We are on a phone", Toast.LENGTH_LONG).show();
     }
 
     /**

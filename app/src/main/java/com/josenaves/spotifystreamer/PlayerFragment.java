@@ -74,6 +74,26 @@ public class PlayerFragment extends Fragment {
     private String trackUrl;
     private String trackName;
 
+    private boolean mTwoPane = false;
+
+    public static PlayerFragment newInstance(String albumName, String artistId, String artistName,
+                                             String trackId, String trackArt, String trackName,
+                                             String trackUrl) {
+
+        PlayerFragment playerFragment = new PlayerFragment();
+
+        playerFragment.albumName = albumName;
+        playerFragment.artistId = artistId;
+        playerFragment.artistName = artistName;
+        playerFragment.trackId = trackId;
+        playerFragment.trackArt = trackArt;
+        playerFragment.trackName = trackName;
+        playerFragment.trackUrl = trackUrl;
+
+        playerFragment.mTwoPane = true;
+        return playerFragment;
+    }
+
     public PlayerFragment() {
     }
 
@@ -89,15 +109,17 @@ public class PlayerFragment extends Fragment {
         Log.d(TAG, "onCreate...");
         super.onCreate(savedInstanceState);
 
-        albumName = ((PlayerActivity)listener).getAlbumName();
-        artistId = ((PlayerActivity)listener).getArtistId();
-        artistName = ((PlayerActivity)listener).getArtistName();
-        trackId = ((PlayerActivity)listener).getTrackId();
-        trackArt = ((PlayerActivity)listener).getTrackArt();
-        trackName = ((PlayerActivity)listener).getTrackName();
-        trackUrl = ((PlayerActivity)listener).getTrackUrl();
-
         setRetainInstance(true);
+
+        if (!mTwoPane) {
+            albumName = ((PlayerActivity)listener).getAlbumName();
+            artistId = ((PlayerActivity)listener).getArtistId();
+            artistName = ((PlayerActivity)listener).getArtistName();
+            trackId = ((PlayerActivity)listener).getTrackId();
+            trackArt = ((PlayerActivity)listener).getTrackArt();
+            trackName = ((PlayerActivity)listener).getTrackName();
+            trackUrl = ((PlayerActivity)listener).getTrackUrl();
+        }
     }
 
     @Override
