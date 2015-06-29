@@ -41,7 +41,6 @@ public class MainActivityFragment extends Fragment {
 
     public static final String TAG = MainActivityFragment.class.getSimpleName();
 
-
     private SpotifyService spotifyService;
 
     private EditText txtSearch;
@@ -50,6 +49,8 @@ public class MainActivityFragment extends Fragment {
     private FragmentActivity listener;
 
     private boolean mTwoPane;
+
+    private TopTenActivityFragment topTenActivityFragment;
 
     public MainActivityFragment() {
     }
@@ -68,7 +69,7 @@ public class MainActivityFragment extends Fragment {
 
         setRetainInstance(true);
         SharedPreferences sharedPreferences = PreferenceManager.getDefaultSharedPreferences(getActivity());
-        String country = sharedPreferences.getString(SettingsActivity.KEY_LOCATION, "BR");
+        String country = sharedPreferences.getString(SettingsActivity.KEY_LOCATION, SettingsActivity.DEFAULT_LOCATION);
 
         spotifyService = SpotifyRestService.getInstance(country);
 
@@ -113,11 +114,12 @@ public class MainActivityFragment extends Fragment {
                 Artist artist = (Artist) adapterView.getItemAtPosition(position);
 
                 if (mTwoPane) {
-                    TopTenActivityFragment topTenActivityFragment = TopTenActivityFragment.newInstance(artist.id, artist.name);
+                    topTenActivityFragment = TopTenActivityFragment.newInstance(artist.id, artist.name);
 
                     FragmentManager fragmentManager = getFragmentManager();
                     fragmentManager.beginTransaction()
-                            .replace(R.id.search_container, topTenActivityFragment)
+                            .replace(R.id.search_container, topTenActivityFragment, TopTenActivityFragment.TAG)
+                            .addToBackStack(null)
                             .commit();
                 }
                 else {

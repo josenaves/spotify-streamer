@@ -9,7 +9,7 @@ import android.view.Menu;
 import android.view.MenuItem;
 import android.widget.Toast;
 
-public class MainActivity extends AppCompatActivity {
+public class MainActivity extends AppCompatActivity implements TrackChangedListener {
 
     public static final String TAG = MainActivity.class.getSimpleName();
 
@@ -18,6 +18,7 @@ public class MainActivity extends AppCompatActivity {
     // Instance of the progress action-view
     private MenuItem actionProgressItem;
 
+    private TopTenActivityFragment topTenActivityFragment;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -85,5 +86,25 @@ public class MainActivity extends AppCompatActivity {
     protected void onPause() {
         Log.d(TAG, "onPause...");
         super.onPause();
+    }
+
+    @Override
+    public void onPrevious() {
+        topTenActivityFragment = (TopTenActivityFragment)getSupportFragmentManager()
+                .findFragmentByTag(TopTenActivityFragment.TAG);
+
+        if (topTenActivityFragment != null) {
+            topTenActivityFragment.goToPreviousTrack();
+        }
+    }
+
+    @Override
+    public void onNext() {
+        topTenActivityFragment = (TopTenActivityFragment)getSupportFragmentManager()
+                .findFragmentByTag(TopTenActivityFragment.TAG);
+
+        if (topTenActivityFragment != null) {
+            topTenActivityFragment.goToNextTrack();
+        }
     }
 }

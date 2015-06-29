@@ -44,7 +44,11 @@ public class TopTenActivityFragment extends Fragment {
 
     private boolean mTwoPane = false;
 
+    private ListView listTracks;
+
     private TrackAdapter adapter;
+
+    private int selectedItemPosition;
 
     public TopTenActivityFragment() {
     }
@@ -94,12 +98,16 @@ public class TopTenActivityFragment extends Fragment {
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
         Log.d(TAG, "onCreateView...");
         View view = inflater.inflate(R.layout.fragment_top_ten, container, false);
-        ListView listTracks = (ListView) view.findViewById(R.id.lstTracks);
+        listTracks = (ListView) view.findViewById(R.id.lstTracks);
+        listTracks.setChoiceMode(ListView.CHOICE_MODE_SINGLE);
         listTracks.setAdapter(adapter);
         listTracks.setOnItemClickListener(new AdapterView.OnItemClickListener() {
             @Override
             public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
                 Track track = (Track) parent.getItemAtPosition(position);
+
+                selectedItemPosition = position;
+                view.setSelected(true);
 
                 if (!mTwoPane) {
                     // pass data for next activity
@@ -129,8 +137,8 @@ public class TopTenActivityFragment extends Fragment {
                     FragmentManager fragmentManager = getActivity().getSupportFragmentManager();
                     fragmentManager
                             .beginTransaction()
-                            .add(R.id.player_container, playerFragment)
-                            .addToBackStack(playerFragment.TAG)
+                            .replace(R.id.player_container, playerFragment, PlayerFragment.TAG)
+                            .addToBackStack(null)
                             .commit();
                 }
             }
@@ -227,6 +235,37 @@ public class TopTenActivityFragment extends Fragment {
     public void onPause() {
         Log.d(TAG, "onPause...");
         super.onPause();
+    }
+
+    public void goToNextTrack() {
+        int max = listTracks.getAdapter().getCount() - 1;
+        if (selectedItemPosition < max) {
+            selectedItemPosition++;
+            listTracks.setSelection(selectedItemPosition);
+            listTracks.performItemClick(
+                    listTracks.getAdapter().getView(selectedItemPosition, null, null),
+                    selectedItemPosition,
+                    listTracks.getAdapter().getItemId(selectedItemPosition));
+        }
+        else {
+            Toast.makeText(getActivity(), "You've reached the last track !", Toast.LENGTH_SHORT)
+                    .show();
+        }
+    }
+
+    public void goToPreviousTrack() {
+        if (selectedItemPosition > 0) {
+            selectedItemPosition--;
+            listTracks.setSelection(selectedItemPosition);
+            listTracks.performItemClick(
+                    listTracks.getAdapter().getView(selectedItemPosition, null, null),
+                    selectedItemPosition,
+                    listTracks.getAdapter().getItemId(selectedItemPosition));
+        }
+        else {
+            Toast.makeText(getActivity(), "There's no previous track!", Toast.LENGTH_SHORT)
+                    .show();
+        }
     }
 
 }

@@ -13,6 +13,7 @@ import android.os.Handler;
 import android.preference.PreferenceManager;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentActivity;
+import android.support.v7.app.AppCompatActivity;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -46,7 +47,10 @@ public class PlayerFragment extends Fragment {
 
     private static final int MAX_LENGTH_MILLI = 30000;
 
-    private FragmentActivity listener;
+    private AppCompatActivity listener;
+    private TrackChangedListener callback;
+
+
 
     private TextView txtArtist;
     private TextView txtAlbum;
@@ -106,7 +110,16 @@ public class PlayerFragment extends Fragment {
     public void onAttach(Activity activity) {
         Log.d(TAG, "onAttach...");
         super.onAttach(activity);
-        this.listener = (FragmentActivity) activity;
+
+        listener = (AppCompatActivity)activity;
+
+        try {
+            callback = (TrackChangedListener) activity;
+        }
+        catch (ClassCastException e) {
+            throw new ClassCastException(activity.toString()
+                    + " must implement TrackChangedListener");
+        }
     }
 
     @Override
@@ -145,7 +158,21 @@ public class PlayerFragment extends Fragment {
         Log.d(TAG, msg);
 
         btnNext = (ImageButton)view.findViewById(R.id.btnNext);
+        btnNext.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                callback.onNext();
+            }
+        });
+
         btnPrevious = (ImageButton)view.findViewById(R.id.btnPrevious);
+        btnPrevious.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                callback.onPrevious();
+            }
+        });
+
         btnPlay = (ImageButton)view.findViewById(R.id.btnPlay);
         btnPlay.setOnClickListener(new View.OnClickListener() {
             @Override
