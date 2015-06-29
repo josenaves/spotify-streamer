@@ -113,12 +113,15 @@ public class PlayerFragment extends Fragment {
 
         listener = (AppCompatActivity)activity;
 
-        try {
-            callback = (TrackChangedListener) activity;
-        }
-        catch (ClassCastException e) {
-            throw new ClassCastException(activity.toString()
-                    + " must implement TrackChangedListener");
+
+        if (mTwoPane) {
+            try {
+                callback = (TrackChangedListener) activity;
+            }
+            catch (ClassCastException e) {
+                throw new ClassCastException(activity.toString()
+                        + " must implement TrackChangedListener");
+            }
         }
     }
 
