@@ -22,6 +22,7 @@ import android.widget.Toast;
 import com.squareup.picasso.Picasso;
 
 import java.io.IOException;
+import java.util.ArrayList;
 import java.util.concurrent.TimeUnit;
 
 public class PlayerFragment extends Fragment {
@@ -51,7 +52,9 @@ public class PlayerFragment extends Fragment {
 
     private int timeElapsed;
 
+    private int position;
     private SpotifyTrackParcelable spotifyTrackParcelable;
+    private ArrayList<SpotifyTrackParcelable> tracks;
 
     private boolean isPlaying = false;
 
@@ -76,10 +79,7 @@ public class PlayerFragment extends Fragment {
     public void onAttach(Activity activity) {
         Log.d(TAG, "onAttach...");
         super.onAttach(activity);
-
         listener = (AppCompatActivity)activity;
-
-
         if (mTwoPane) {
             try {
                 callback = (TrackChangedListener) activity;
@@ -88,13 +88,16 @@ public class PlayerFragment extends Fragment {
                 throw new ClassCastException(activity.toString() + " must implement TrackChangedListener");
             }
         }
+        else {
+            position = ((PlayerActivity)listener).getTrackPosition();
+            tracks = ((PlayerActivity)listener).getTracks();
+        }
     }
 
     @Override
     public void onCreate(Bundle savedInstanceState) {
         Log.d(TAG, "onCreate...");
         super.onCreate(savedInstanceState);
-
         setRetainInstance(true);
 
         if (!mTwoPane) {
@@ -109,27 +112,49 @@ public class PlayerFragment extends Fragment {
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
         Log.d(TAG, "onCreateView...");
+        Log.d(TAG, spotifyTrackParcelable.toString());
+
         View view = inflater.inflate(R.layout.fragment_player, container, false);
-
-        String msg = spotifyTrackParcelable.toString();
-
-        Toast.makeText(listener.getBaseContext(), msg, Toast.LENGTH_LONG).show();
-
-        Log.d(TAG, msg);
-
-        btnNext = (ImageButton)view.findViewById(R.id.btnNext);
-        btnNext.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                callback.onNext();
-            }
-        });
 
         btnPrevious = (ImageButton)view.findViewById(R.id.btnPrevious);
         btnPrevious.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                callback.onPrevious();
+                if (mTwoPane) {
+                    callback.onPrevious();
+                }
+                else {
+                    if (position > 0) {
+                        position--;
+                        spotifyTrackParcelable = tracks.get(position);
+                        if (mediaPlayer.isPlaying()) pauseMusic(true);
+                        refreshView();
+                    }
+                    else {
+                        Toast.makeText(getActivity(), R.string.message_minimum_track, Toast.LENGTH_SHORT).show();
+                    }
+                }
+            }
+        });
+
+        btnNext = (ImageButton)view.findViewById(R.id.btnNext);
+        btnNext.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                if (mTwoPane) {
+                    callback.onNext();
+                }
+                else {
+                    if (position < tracks.size() - 1) {
+                        position++;
+                        spotifyTrackParcelable = tracks.get(position);
+                        if (mediaPlayer.isPlaying()) pauseMusic(true);
+                        refreshView();
+                    }
+                    else {
+                        Toast.makeText(getActivity(), R.string.message_maximum_track, Toast.LENGTH_SHORT).show();
+                    }
+                }
             }
         });
 
@@ -138,16 +163,16 @@ public class PlayerFragment extends Fragment {
             @Override
             public void onClick(View v) {
                 if (! isPlaying) {
+                    mediaPlayer = new MediaPlayer();
+                    mediaPlayer.setAudioStreamType(AudioManager.STREAM_MUSIC);
+
                     prepareAndPlayMedia();
 
                     // change button play to pause
                     btnPlay.setImageDrawable(iconPause);
                 }
                 else if (isPlaying) {
-                    mediaPlayer.pause();
-                    // change button play to play
-                    btnPlay.setImageDrawable(iconPlay);
-                    isPlaying = false;
+                    pauseMusic();
                 }
             }
         });
@@ -171,30 +196,53 @@ public class PlayerFragment extends Fragment {
         });
 
         txtArtist = (TextView) view.findViewById(R.id.txtArtist);
-        txtArtist.setText(spotifyTrackParcelable.getArtistName());
-
         txtAlbum = (TextView) view.findViewById(R.id.txtAlbum);
-        txtAlbum.setText(spotifyTrackParcelable.getAlbumName());
-
         txtTrack = (TextView) view.findViewById(R.id.txtTrack);
-        txtTrack.setText(spotifyTrackParcelable.getTrackName());
-
         txtTrackLength = (TextView) view.findViewById(R.id.txtLength);
-        txtTrackLength.setText(TRACK_LENGTH);
-
         txtElapsed = (TextView) view.findViewById(R.id.txtElapsed);
+        imgArt = (ImageView) view.findViewById(R.id.imgArt);
 
+        refreshView();
+
+        return view;
+    }
+
+    private void pauseMusic() {
+        pauseMusic(false);
+    }
+
+    private void pauseMusic(boolean release) {
+        if (release) {
+            mediaPlayer.stop();
+            mediaPlayer.release();
+        }
+        else {
+            mediaPlayer.pause();
+        }
+
+        // change button play to play
+        btnPlay.setImageDrawable(iconPlay);
+        isPlaying = false;
+    }
+
+    private void refreshView() {
+        durationHandler.removeCallbacks(updateSeekBar);
+        timeElapsed = 0;
+        seekBar.setProgress(0);
+
+        txtArtist.setText(spotifyTrackParcelable.getArtistName());
+        txtAlbum.setText(spotifyTrackParcelable.getAlbumName());
+        txtTrack.setText(spotifyTrackParcelable.getTrackName());
+        txtTrackLength.setText(TRACK_LENGTH);
+        txtElapsed.setText("0:00");
         String trackArt = spotifyTrackParcelable.getTrackArtUrl();
         if (trackArt != null) {
-            imgArt = (ImageView) view.findViewById(R.id.imgArt);
             Picasso.with(listener.getBaseContext()).
                     load(trackArt).
                     resize(400, 400).
                     centerCrop().
                     into(imgArt);
         }
-
-        return view;
     }
 
     // handler to change seekBar
@@ -218,6 +266,7 @@ public class PlayerFragment extends Fragment {
     private void prepareAndPlayMedia()  {
         mediaPlayer = new MediaPlayer();
         mediaPlayer.setAudioStreamType(AudioManager.STREAM_MUSIC);
+
         try {
             mediaPlayer.setDataSource(spotifyTrackParcelable.getTrackAudioUrl());
         }
@@ -257,11 +306,11 @@ public class PlayerFragment extends Fragment {
 
     @Override
     public void onStop() {
-        super.onStop();
         if (mediaPlayer != null) {
             mediaPlayer.release();
             mediaPlayer = null;
         }
         durationHandler.removeCallbacks(updateSeekBar);
+        super.onStop();
     }
 }

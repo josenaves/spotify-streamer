@@ -21,6 +21,8 @@
     <string name="dialog_title_country_selection">Choose country location</string>
 
 
+    <string name="message_minimum_track">There\'s no previous track!</string>
+    <string name="message_maximum_track">You\'ve reached the last track !</string>
 
     <string name="message_loading">Loading…</string>
 

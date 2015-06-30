@@ -29,7 +29,7 @@ public class MainActivity extends AppCompatActivity implements TrackChangedListe
         // if search_container is present then the app is running on a tablet
         mTwoPane = Util.isTwoPaneMode(this);
 
-        Toast.makeText(this, mTwoPane? "---- We are on a tablet" : "------ We are on a phone", Toast.LENGTH_LONG).show();
+        //Toast.makeText(this, mTwoPane? "---- We are on a tablet" : "------ We are on a phone", Toast.LENGTH_LONG).show();
 
         if (mTwoPane) {
             getSupportFragmentManager()

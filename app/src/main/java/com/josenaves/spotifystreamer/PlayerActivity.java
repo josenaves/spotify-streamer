@@ -9,12 +9,15 @@ import android.view.Menu;
 import android.view.MenuItem;
 
 import java.io.IOException;
+import java.util.ArrayList;
 
 public class PlayerActivity extends AppCompatActivity {
 
     public static final String TAG = PlayerActivity.class.getSimpleName();
 
     private SpotifyTrackParcelable spotifyTrackParcelable;
+    private ArrayList<SpotifyTrackParcelable> tracks;
+    private int trackPosition;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -22,7 +25,8 @@ public class PlayerActivity extends AppCompatActivity {
 
         Intent intent = getIntent();
         spotifyTrackParcelable = intent.getParcelableExtra(Constants.TRACK);
-
+        tracks = intent.getParcelableArrayListExtra(Constants.TRACKS);
+        trackPosition = intent.getIntExtra(Constants.POSITION, 0);
         setContentView(R.layout.activity_player);
 
         getSupportActionBar().setSubtitle(R.string.app_name);
@@ -53,5 +57,13 @@ public class PlayerActivity extends AppCompatActivity {
 
     public SpotifyTrackParcelable getSpotifyTrackParcelable() {
         return spotifyTrackParcelable;
+    }
+
+    public ArrayList<SpotifyTrackParcelable> getTracks() {
+        return tracks;
+    }
+
+    public int getTrackPosition() {
+        return trackPosition;
     }
 }

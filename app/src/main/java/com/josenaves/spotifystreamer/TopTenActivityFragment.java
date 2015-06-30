@@ -24,6 +24,7 @@ import android.widget.Toast;
 import com.squareup.picasso.Picasso;
 
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.List;
 
 import kaaes.spotify.webapi.android.SpotifyService;
@@ -105,16 +106,7 @@ public class TopTenActivityFragment extends Fragment {
             public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
                 Track track = (Track) parent.getItemAtPosition(position);
 
-                // construct a parcelable track
-                String trackArt = null;
-                if (track.album.images.size() > 0) {
-                    trackArt = track.album.images.get(0).url;
-                }
-
-                //, String artistName) {
-                SpotifyTrackParcelable spotifyTrackParcelable = new SpotifyTrackParcelable(track.id, track.name,
-                        track.preview_url, trackArt, track.album.name, artistId, artistName);
-
+                SpotifyTrackParcelable spotifyTrackParcelable = Util.fromTrack(track, artistId, artistName);
 
                 selectedItemPosition = position;
                 view.setSelected(true);
@@ -123,6 +115,8 @@ public class TopTenActivityFragment extends Fragment {
                     // pass data for next activity
                     Intent intent = new Intent(getActivity(), PlayerActivity.class);
                     intent.putExtra(Constants.TRACK, spotifyTrackParcelable);
+                    intent.putParcelableArrayListExtra(Constants.TRACKS, adapter.toSpotifyArrayList());
+                    intent.putExtra(Constants.POSITION, position);
 
                     // call next activity
                     startActivity(intent);
@@ -192,7 +186,7 @@ public class TopTenActivityFragment extends Fragment {
         public TrackAdapter(Context context, List<Track> tracks) {
             super(context, R.layout.list_item_track, tracks);
             this.context = context;
-            this.tracks = new ArrayList<>(tracks);
+            this.tracks = tracks;
         }
 
         @Override
@@ -224,6 +218,15 @@ public class TopTenActivityFragment extends Fragment {
         }
 
         public List<Track> getValues() { return tracks; }
+
+        public ArrayList<SpotifyTrackParcelable> toSpotifyArrayList() {
+            ArrayList<SpotifyTrackParcelable> spotifyTrackParcelables = new ArrayList<>();
+            for (Track track : tracks) {
+                spotifyTrackParcelables.add(Util.fromTrack(track, artistId, artistName));
+            }
+            return spotifyTrackParcelables;
+        }
+
     }
 
     @Override
@@ -243,7 +246,7 @@ public class TopTenActivityFragment extends Fragment {
                     listTracks.getAdapter().getItemId(selectedItemPosition));
         }
         else {
-            Toast.makeText(getActivity(), "You've reached the last track !", Toast.LENGTH_SHORT)
+            Toast.makeText(getActivity(), R.string.message_maximum_track, Toast.LENGTH_SHORT)
                     .show();
         }
     }
@@ -258,8 +261,7 @@ public class TopTenActivityFragment extends Fragment {
                     listTracks.getAdapter().getItemId(selectedItemPosition));
         }
         else {
-            Toast.makeText(getActivity(), "There's no previous track!", Toast.LENGTH_SHORT)
-                    .show();
+            Toast.makeText(getActivity(), R.string.message_minimum_track, Toast.LENGTH_SHORT).show();
         }
     }
 

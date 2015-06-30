@@ -1,10 +1,11 @@
 package com.josenaves.spotifystreamer;
 
+
+
 import android.app.Activity;
 import android.content.res.Configuration;
-import android.support.v4.app.Fragment;
-import android.view.View;
-import android.view.ViewGroup;
+
+import kaaes.spotify.webapi.android.models.Track;
 
 /**
  * This class have many utility methods
@@ -23,5 +24,19 @@ public final class Util {
             }
         }
         return twoPane;
+    }
+
+    public static SpotifyTrackParcelable fromTrack(Track track, String artistId, String artistName) {
+        SpotifyTrackParcelable spotifyTrackParcelable;
+
+        String trackArt = null;
+        if (track.album.images.size() > 0) {
+            trackArt = track.album.images.get(0).url;
+        }
+
+        spotifyTrackParcelable = new SpotifyTrackParcelable(track.id, track.name,
+                track.preview_url, trackArt, track.album.name, artistId, artistName);
+
+        return spotifyTrackParcelable;
     }
 }
