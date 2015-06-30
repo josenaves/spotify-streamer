@@ -1,43 +1,28 @@
 package com.josenaves.spotifystreamer;
 
 import android.app.Activity;
-import android.content.Context;
-import android.content.SharedPreferences;
 import android.content.res.Resources;
 import android.graphics.drawable.Drawable;
 import android.media.AudioManager;
 import android.media.MediaPlayer;
-import android.os.AsyncTask;
 import android.os.Bundle;
 import android.os.Handler;
-import android.preference.PreferenceManager;
 import android.support.v4.app.Fragment;
-import android.support.v4.app.FragmentActivity;
 import android.support.v7.app.AppCompatActivity;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.ArrayAdapter;
 import android.widget.ImageButton;
 import android.widget.ImageView;
-import android.widget.ListView;
 import android.widget.SeekBar;
 import android.widget.TextView;
 import android.widget.Toast;
 
 import com.squareup.picasso.Picasso;
 
-import org.w3c.dom.Text;
-
 import java.io.IOException;
-import java.util.ArrayList;
-import java.util.List;
 import java.util.concurrent.TimeUnit;
-
-import kaaes.spotify.webapi.android.SpotifyService;
-import kaaes.spotify.webapi.android.models.Track;
-import kaaes.spotify.webapi.android.models.Tracks;
 
 public class PlayerFragment extends Fragment {
 
@@ -49,8 +34,6 @@ public class PlayerFragment extends Fragment {
 
     private AppCompatActivity listener;
     private TrackChangedListener callback;
-
-
 
     private TextView txtArtist;
     private TextView txtAlbum;
@@ -68,6 +51,8 @@ public class PlayerFragment extends Fragment {
 
     private int timeElapsed;
 
+    private SpotifyTrackParcelable spotifyTrackParcelable;
+
     private boolean isPlaying = false;
 
     // http://examples.javacodegeeks.com/android/android-mediaplayer-example/
@@ -75,30 +60,11 @@ public class PlayerFragment extends Fragment {
 
     private Handler durationHandler = new Handler();
 
-    private String albumName;
-    private String artistId;
-    private String artistName;
-    private String trackId;
-    private String trackArt;
-    private String trackUrl;
-    private String trackName;
-
     private boolean mTwoPane = false;
 
-    public static PlayerFragment newInstance(String albumName, String artistId, String artistName,
-                                             String trackId, String trackArt, String trackName,
-                                             String trackUrl) {
-
+    public static PlayerFragment newInstance(SpotifyTrackParcelable spotifyTrackParcelable) {
         PlayerFragment playerFragment = new PlayerFragment();
-
-        playerFragment.albumName = albumName;
-        playerFragment.artistId = artistId;
-        playerFragment.artistName = artistName;
-        playerFragment.trackId = trackId;
-        playerFragment.trackArt = trackArt;
-        playerFragment.trackName = trackName;
-        playerFragment.trackUrl = trackUrl;
-
+        playerFragment.spotifyTrackParcelable = spotifyTrackParcelable;
         playerFragment.mTwoPane = true;
         return playerFragment;
     }
@@ -119,8 +85,7 @@ public class PlayerFragment extends Fragment {
                 callback = (TrackChangedListener) activity;
             }
             catch (ClassCastException e) {
-                throw new ClassCastException(activity.toString()
-                        + " must implement TrackChangedListener");
+                throw new ClassCastException(activity.toString() + " must implement TrackChangedListener");
             }
         }
     }
@@ -133,13 +98,7 @@ public class PlayerFragment extends Fragment {
         setRetainInstance(true);
 
         if (!mTwoPane) {
-            albumName = ((PlayerActivity)listener).getAlbumName();
-            artistId = ((PlayerActivity)listener).getArtistId();
-            artistName = ((PlayerActivity)listener).getArtistName();
-            trackId = ((PlayerActivity)listener).getTrackId();
-            trackArt = ((PlayerActivity)listener).getTrackArt();
-            trackName = ((PlayerActivity)listener).getTrackName();
-            trackUrl = ((PlayerActivity)listener).getTrackUrl();
+            spotifyTrackParcelable = ((PlayerActivity)listener).getSpotifyTrackParcelable();
         }
 
         Resources resources = getResources();
@@ -152,9 +111,7 @@ public class PlayerFragment extends Fragment {
         Log.d(TAG, "onCreateView...");
         View view = inflater.inflate(R.layout.fragment_player, container, false);
 
-        String msg = "trackId = " + trackId + " - artist = " + artistId + " - artistName = "
-                + artistName  + " - trackArt = " + trackArt + " - trackName = " + trackName
-                + " - trackUrl = " + trackUrl + " - albumName = " + albumName;
+        String msg = spotifyTrackParcelable.toString();
 
         Toast.makeText(listener.getBaseContext(), msg, Toast.LENGTH_LONG).show();
 
@@ -214,19 +171,20 @@ public class PlayerFragment extends Fragment {
         });
 
         txtArtist = (TextView) view.findViewById(R.id.txtArtist);
-        txtArtist.setText(artistName);
+        txtArtist.setText(spotifyTrackParcelable.getArtistName());
 
         txtAlbum = (TextView) view.findViewById(R.id.txtAlbum);
-        txtAlbum.setText(albumName);
+        txtAlbum.setText(spotifyTrackParcelable.getAlbumName());
 
         txtTrack = (TextView) view.findViewById(R.id.txtTrack);
-        txtTrack.setText(trackName);
+        txtTrack.setText(spotifyTrackParcelable.getTrackName());
 
         txtTrackLength = (TextView) view.findViewById(R.id.txtLength);
         txtTrackLength.setText(TRACK_LENGTH);
 
         txtElapsed = (TextView) view.findViewById(R.id.txtElapsed);
 
+        String trackArt = spotifyTrackParcelable.getTrackArtUrl();
         if (trackArt != null) {
             imgArt = (ImageView) view.findViewById(R.id.imgArt);
             Picasso.with(listener.getBaseContext()).
@@ -261,7 +219,7 @@ public class PlayerFragment extends Fragment {
         mediaPlayer = new MediaPlayer();
         mediaPlayer.setAudioStreamType(AudioManager.STREAM_MUSIC);
         try {
-            mediaPlayer.setDataSource(trackUrl);
+            mediaPlayer.setDataSource(spotifyTrackParcelable.getTrackAudioUrl());
         }
         catch (IOException e) {
             Log.e(TAG, e.getMessage());

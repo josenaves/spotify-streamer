@@ -14,27 +14,14 @@ public class PlayerActivity extends AppCompatActivity {
 
     public static final String TAG = PlayerActivity.class.getSimpleName();
 
-    private String artistId;
-    private String artistName;
-    private String trackId;
-    private String trackName;
-    private String trackArt;
-    private String trackUrl;
-    private String albumName;
+    private SpotifyTrackParcelable spotifyTrackParcelable;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
 
         Intent intent = getIntent();
-
-        albumName = intent.getStringExtra(Constants.ALBUM_NAME);
-        artistName = intent.getStringExtra(Constants.ARTIST_NAME);
-        artistId = intent.getStringExtra(Constants.ARTIST_ID);
-        trackId = intent.getStringExtra(Constants.TRACK_ID);
-        trackArt = intent.getStringExtra(Constants.TRACK_ART);
-        trackName = intent.getStringExtra(Constants.TRACK_NAME);
-        trackUrl = intent.getStringExtra(Constants.TRACK_URL);
+        spotifyTrackParcelable = intent.getParcelableExtra(Constants.TRACK);
 
         setContentView(R.layout.activity_player);
 
@@ -64,31 +51,7 @@ public class PlayerActivity extends AppCompatActivity {
         return super.onOptionsItemSelected(item);
     }
 
-    public String getArtistId() {
-        return artistId;
-    }
-
-    public String getArtistName() {
-        return artistName;
-    }
-
-    public String getTrackId() {
-        return trackId;
-    }
-
-    public String getTrackArt() {
-        return trackArt;
-    }
-
-    public String getTrackName() {
-        return trackName;
-    }
-
-    public String getTrackUrl() {
-        return trackUrl;
-    }
-
-    public String getAlbumName() {
-        return albumName;
+    public SpotifyTrackParcelable getSpotifyTrackParcelable() {
+        return spotifyTrackParcelable;
     }
 }

@@ -26,7 +26,6 @@ import com.squareup.picasso.Picasso;
 import java.util.ArrayList;
 import java.util.List;
 
-
 import kaaes.spotify.webapi.android.SpotifyService;
 import kaaes.spotify.webapi.android.models.Track;
 import kaaes.spotify.webapi.android.models.Tracks;
@@ -106,34 +105,30 @@ public class TopTenActivityFragment extends Fragment {
             public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
                 Track track = (Track) parent.getItemAtPosition(position);
 
+                // construct a parcelable track
+                String trackArt = null;
+                if (track.album.images.size() > 0) {
+                    trackArt = track.album.images.get(0).url;
+                }
+
+                //, String artistName) {
+                SpotifyTrackParcelable spotifyTrackParcelable = new SpotifyTrackParcelable(track.id, track.name,
+                        track.preview_url, trackArt, track.album.name, artistId, artistName);
+
+
                 selectedItemPosition = position;
                 view.setSelected(true);
 
                 if (!mTwoPane) {
                     // pass data for next activity
                     Intent intent = new Intent(getActivity(), PlayerActivity.class);
-                    intent.putExtra(Constants.ALBUM_NAME, track.album.name);
-                    intent.putExtra(Constants.ARTIST_ID, artistId);
-                    intent.putExtra(Constants.ARTIST_NAME, artistName);
-                    intent.putExtra(Constants.TRACK_ID, track.id);
-                    intent.putExtra(Constants.TRACK_NAME, track.name);
-                    intent.putExtra(Constants.TRACK_URL, track.preview_url);
-
-                    if (track.album.images.size() > 0) {
-                        intent.putExtra(Constants.TRACK_ART, track.album.images.get(0).url);
-                    }
+                    intent.putExtra(Constants.TRACK, spotifyTrackParcelable);
 
                     // call next activity
                     startActivity(intent);
                 }
                 else {
-                    // fragment mode
-                    String trackArt =
-                            track.album.images.size() > 0 ? track.album.images.get(0).url : null;
-
-                    PlayerFragment playerFragment = PlayerFragment.newInstance(track.album.name,
-                            artistId, artistName, track.id, trackArt, track.name, track.preview_url);
-
+                    PlayerFragment playerFragment = PlayerFragment.newInstance(spotifyTrackParcelable);
                     FragmentManager fragmentManager = getActivity().getSupportFragmentManager();
                     fragmentManager
                             .beginTransaction()

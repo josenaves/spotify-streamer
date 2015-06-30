@@ -11,4 +11,7 @@ public class Constants {
     public static final String TRACK_NAME = "track_name";
     public static final String TRACK_URL = "track_url";
 
+    public static final String TRACK = "track";
+    public static final String TRACKS = "tracks";
+
 }
