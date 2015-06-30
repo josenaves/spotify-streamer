@@ -69,7 +69,6 @@ public class TopTenActivityFragment extends Fragment {
         this.listener = (FragmentActivity) activity;
     }
 
-
     @Override
     public void onDetach() {
         Log.d(TAG, "onDetach...");
@@ -83,7 +82,6 @@ public class TopTenActivityFragment extends Fragment {
         super.onCreate(savedInstanceState);
 
         //setRetainInstance(true);
-
         SharedPreferences sharedPreferences = PreferenceManager.getDefaultSharedPreferences(getActivity());
         String country = sharedPreferences.getString(SettingsActivity.KEY_LOCATION, SettingsActivity.DEFAULT_LOCATION);
 
@@ -95,7 +93,7 @@ public class TopTenActivityFragment extends Fragment {
                 artistId = ((TopTenActivity)listener).getArtistId();
                 artistName = ((TopTenActivity)listener).getArtistName();
             }
-            else {
+            else if (savedInstanceState != null) {
                 artistId = savedInstanceState.getString(Constants.ARTIST_ID);
                 artistName = savedInstanceState.getString(Constants.ARTIST_NAME);
             }
@@ -103,9 +101,6 @@ public class TopTenActivityFragment extends Fragment {
 
         // create the adapter to convert the results into views
         adapter = new TrackAdapter(listener, new ArrayList<Track>());
-
-        // get tracks via SpotifyService
-        new TracksTask().execute(artistId);
     }
 
     @Override
@@ -150,8 +145,25 @@ public class TopTenActivityFragment extends Fragment {
     }
 
     @Override
+    public void onActivityCreated(Bundle savedInstanceState) {
+        Log.d(TAG, "onActivityCreated...");
+        super.onActivityCreated(savedInstanceState);
+
+        if (savedInstanceState != null) {
+            artistId = savedInstanceState.getString(Constants.ARTIST_ID);
+            artistName = savedInstanceState.getString(Constants.ARTIST_NAME);
+        }
+
+        if (artistId != null) {
+            // get tracks via SpotifyService
+            new TracksTask().execute(artistId);
+        }
+    }
+
+    @Override
     public void onSaveInstanceState(Bundle outState) {
         Log.d(TAG, "onSaveInstanceState...");
+        Log.d(TAG, "saving artistId:" + artistId);
         outState.putString(Constants.ARTIST_ID, artistId);
         outState.putString(Constants.ARTIST_NAME, artistName);
         super.onSaveInstanceState(outState);
