@@ -67,7 +67,7 @@ public class MainActivityFragment extends Fragment {
         Log.d(TAG, "onCreate...");
         super.onCreate(savedInstanceState);
 
-        setRetainInstance(true);
+        //setRetainInstance(true);
         SharedPreferences sharedPreferences = PreferenceManager.getDefaultSharedPreferences(getActivity());
         String country = sharedPreferences.getString(SettingsActivity.KEY_LOCATION, SettingsActivity.DEFAULT_LOCATION);
 
@@ -138,9 +138,7 @@ public class MainActivityFragment extends Fragment {
     public void onActivityCreated(Bundle savedInstanceState) {
         Log.d(TAG, "onActivityCreated");
         super.onActivityCreated(savedInstanceState);
-
         mTwoPane = Util.isTwoPaneMode(listener);
-        Toast.makeText(listener, mTwoPane? "We are on a TABLET" : "We are on a phone", Toast.LENGTH_LONG).show();
     }
 
     /**

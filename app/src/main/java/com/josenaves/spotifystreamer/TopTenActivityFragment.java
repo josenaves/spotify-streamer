@@ -69,12 +69,20 @@ public class TopTenActivityFragment extends Fragment {
         this.listener = (FragmentActivity) activity;
     }
 
+
+    @Override
+    public void onDetach() {
+        Log.d(TAG, "onDetach...");
+        this.listener = null;
+        super.onDetach();
+    }
+
     @Override
     public void onCreate(Bundle savedInstanceState) {
         Log.d(TAG, "onCreate...");
         super.onCreate(savedInstanceState);
 
-        setRetainInstance(true);
+        //setRetainInstance(true);
 
         SharedPreferences sharedPreferences = PreferenceManager.getDefaultSharedPreferences(getActivity());
         String country = sharedPreferences.getString(SettingsActivity.KEY_LOCATION, SettingsActivity.DEFAULT_LOCATION);
@@ -82,9 +90,15 @@ public class TopTenActivityFragment extends Fragment {
         spotifyService = SpotifyRestService.getInstance(country);
 
         if (!mTwoPane) {
-            // not in twopane - get those parameters from parent activity
-            artistId = ((TopTenActivity)listener).getArtistId();
-            artistName = ((TopTenActivity)listener).getArtistName();
+            if (listener != null && listener instanceof TopTenActivity) {
+                // not in twopane - get those parameters from parent activity
+                artistId = ((TopTenActivity)listener).getArtistId();
+                artistName = ((TopTenActivity)listener).getArtistName();
+            }
+            else {
+                artistId = savedInstanceState.getString(Constants.ARTIST_ID);
+                artistName = savedInstanceState.getString(Constants.ARTIST_NAME);
+            }
         }
 
         // create the adapter to convert the results into views
@@ -138,11 +152,8 @@ public class TopTenActivityFragment extends Fragment {
     @Override
     public void onSaveInstanceState(Bundle outState) {
         Log.d(TAG, "onSaveInstanceState...");
-
-        // TODO make it work
-        //outState.putSerializable(BUNDLE_ADAPTER, adapter);
         outState.putString(Constants.ARTIST_ID, artistId);
-
+        outState.putString(Constants.ARTIST_NAME, artistName);
         super.onSaveInstanceState(outState);
     }
 
